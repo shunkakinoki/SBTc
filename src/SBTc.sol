@@ -17,7 +17,7 @@ contract SBTc is UUPSUpgrade, Initializable, OwnableUDS, AccessControlUDS, Pausa
     /// EIP 5192: https://github.com/ethereum/EIPs/blob/7711f47ffe2969ab4462d848bca475e2ec857feb/EIPS/eip-5192.md
     bytes4 constant SOULBOUND_VALUE = bytes4(keccak256("soulbound")); // 0x9e7ed7f8;
 
-    function init() public initializer {
+    function init() public virtual initializer {
         __Ownable_init();
         __ERC721_init("Soul Bount Token Compatible", "SBTC");
     }
@@ -90,4 +90,21 @@ contract SBTc is UUPSUpgrade, Initializable, OwnableUDS, AccessControlUDS, Pausa
     }
 
     function _authorizeUpgrade() internal override onlyOwner {}
+}
+
+contract EIP5114SBTc is SBTc {
+    function init() public override {
+        __Ownable_init();
+        __ERC721_init("My NFT V2", "NFT V2");
+    }
+
+    // as specified in 5114
+    function collectionUri() external pure returns (string memory) {
+        return "https://soulbound.org/collection/";
+    }
+
+    // as specified in 5114
+    function metadataFormat() external pure returns (string memory) {
+        return "EIP-ABCD";
+    }
 }
