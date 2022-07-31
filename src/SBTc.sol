@@ -9,6 +9,7 @@ import {UUPSUpgrade} from "UDS/proxy/UUPSUpgrade.sol";
 import {Initializable} from "UDS/auth/Initializable.sol";
 
 error NotPauser();
+error TokenTransferWhilePaused();
 
 contract SBTc is UUPSUpgrade, Initializable, OwnableUDS, AccessControlUDS, PausableUDS, ERC721UDS {
     /// @dev keccak256('PAUSER_ROLE')
@@ -52,6 +53,40 @@ contract SBTc is UUPSUpgrade, Initializable, OwnableUDS, AccessControlUDS, Pausa
             interfaceId == 0x01ffc9a7 || // ERC165 Interface ID for ERC165
             interfaceId == 0x80ac58cd || // ERC165 Interface ID for ERC721
             interfaceId == 0x5b5e139f; // ERC165 Interface ID for ERC721Metadata
+    }
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 id
+    ) public virtual override(ERC721UDS) {
+        /// @dev Pause status won't block mint operation
+        if (from != address(0) && paused()) revert TokenTransferWhilePaused();
+
+        super.transferFrom(from, to, id);
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id
+    ) public virtual override(ERC721UDS) {
+        /// @dev Pause status won't block mint operation
+        if (from != address(0) && paused()) revert TokenTransferWhilePaused();
+
+        super.safeTransferFrom(from, to, id);
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        bytes calldata data
+    ) public virtual override(ERC721UDS) {
+        /// @dev Pause status won't block mint operation
+        if (from != address(0) && paused()) revert TokenTransferWhilePaused();
+
+        super.safeTransferFrom(from, to, id, data);
     }
 
     function _authorizeUpgrade() internal override onlyOwner {}
