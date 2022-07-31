@@ -13,6 +13,8 @@ error NotPauser();
 contract SBTc is UUPSUpgrade, Initializable, OwnableUDS, AccessControlUDS, PausableUDS, ERC721UDS {
     /// @dev keccak256('PAUSER_ROLE')
     bytes32 public constant PAUSER_ROLE = 0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a;
+    /// EIP 5192: https://github.com/ethereum/EIPs/blob/7711f47ffe2969ab4462d848bca475e2ec857feb/EIPS/eip-5192.md
+    bytes4 constant SOULBOUND_VALUE = bytes4(keccak256("soulbound")); // 0x9e7ed7f8;
 
     function init() public initializer {
         __Ownable_init();
